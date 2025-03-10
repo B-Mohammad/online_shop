@@ -6,6 +6,10 @@ spl_autoload_register(function ($class) {
   require __DIR__ . "/src/$class.php";
 });
 
+set_exception_handler("ErrorHandler::handlerException");
+
+header("Content-type: application/json; charset=UTF-8");
+
 $parts = explode("/", $_SERVER["REQUEST_URI"]);
 
 if ($parts[2] != "products") {
@@ -14,6 +18,12 @@ if ($parts[2] != "products") {
 }
 
 $id = $parts[3];
-$controller = new ProductController;
+
+$database = new Database();
+$getWay = new ProductGetWay($database);
+
+
+
+$controller = new ProductController($getWay);
 
 $controller->processRequest($_SERVER['REQUEST_METHOD'], $id);
